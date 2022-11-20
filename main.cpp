@@ -1,40 +1,65 @@
 #include <fstream>
 #include <iostream>
-#include <unordered_map>
 
 using std::cout;
 using std::endl;
 using std::string;
 
 class dictionary {
+
+private:
+    int ***dict = new int **[26]; // initalize nested hashtable
+    void createDict() {
+        for (int i = 0; i < 26; ++i) {
+            dict[i] = new int *[26];
+            for (int j = 0; j < 26; ++j) {
+                dict[i][j] = new int[26];
+            }
+        }
+
+        for (int i = 0; i < 26; i++) {
+            for (int j = 0; j < 26; j++) {
+                for (int k = 0; k < 26; k++) {
+                    dict[i][j][k] = 1;
+                }
+            }
+        }
+    }
+
+    int hashFunc(char key) {
+        return (toupper(key) - 65);
+    }
+
 public:
-    std::unordered_map<char, std::unordered_map<char, std::unordered_map<char, string>>> dict;  //initalize nested hashtable
     dictionary() {
+        createDict();
         string line;
-        std::ifstream myReadFile("output.txt"); //open file
+        std::ifstream myReadFile("output.txt"); // open file
 
         while (getline(myReadFile, line)) {
-            dict[line[0]][line[1]][line[2]] = line.substr(4);   //add word to dictionary
+            // dict[hashFunc(line[0])][hashFunc(line[1])][hashFunc(line[2])] = line.substr(4); // add word to dictionary
         }
-        myReadFile.close(); //close file
+        myReadFile.close(); // close file
     }
+
     bool insert(string &word, string &desc) {
         if (word.length() != 3 || !isalpha(word[0]) || !isalpha(word[1]) || !isalpha(word[2]))
             return false; // not a valid 3-letter word
-        if (dict[toupper(word[0])][toupper(word[1])][toupper(word[2])] != "")
-            return false; // word already in dictionary
-        dict[toupper(word[0])][toupper(word[1])][toupper(word[2])] = desc;
+        // if (dict[toupper(word[0])][toupper(word[1])][toupper(word[2])] != "")
+        // return false; // word already in dictionary
+        // dict[toupper(word[0])][toupper(word[1])][toupper(word[2])] = desc;
         return true;
     }
     string lookUp(string &word) {
         if (word.length() != 3 || !isalpha(word[0]) || !isalpha(word[1]) || !isalpha(word[2]))
-            return NULL;                                                   // not a valid 3-letter word
-        return dict[toupper(word[0])][toupper(word[1])][toupper(word[2])]; // returns the word's description
+            return NULL; // not a valid 3-letter word
+        // return dict[toupper(word[0])][toupper(word[1])][toupper(word[2])]; // returns the word's description
+        return "";
     }
     bool deleteWord(string &word) {
         if (word.length() != 3 || !isalpha(word[0]) || !isalpha(word[1]) || !isalpha(word[2]))
             return false; // not a valid 3-letter word
-        dict[word[0]][word[1]].erase(word[2]);  //erase last hashtable
+        // dict[word[0]][word[1]].erase(word[2]);  //erase last hashtable
         return true;
     }
 };
@@ -69,9 +94,9 @@ int main() {
     dictionary myDictionary;
     string word = "AAH", desc = "v. to have fun";
     cout << "Try to insert a word that already exists (returns false): " << myDictionary.insert(word, desc) << endl;
-    cout << "Look up the description of a word: " << word  << " " << myDictionary.lookUp(word) << endl;
+    cout << "Look up the description of a word: " << word << " " << myDictionary.lookUp(word) << endl;
     cout << "Delete a word that exists in the dictionary (returns true): " << myDictionary.deleteWord(word) << endl;
-    cout << "Look up the description of a deleted word: " << word  << " " << myDictionary.lookUp(word) << endl;
+    cout << "Look up the description of a deleted word: " << word << " " << myDictionary.lookUp(word) << endl;
     cout << "Insert a valid word (returns true): " << myDictionary.insert(word, desc) << endl;
-    cout << "Look up the description of the newly added word: " << word  << " " << myDictionary.lookUp(word) << endl;
+    cout << "Look up the description of the newly added word: " << word << " " << myDictionary.lookUp(word) << endl;
 }

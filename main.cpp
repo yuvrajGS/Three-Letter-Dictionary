@@ -9,7 +9,7 @@ class dictionary {
 
 private:
     std::string ***dict = new std::string **[26]; // initalize nested hashtable
-    void createDict() {
+    void createDict() { //create nested dictionary
         for (int i = 0; i < 26; ++i) {
             dict[i] = new std::string *[26];
             for (int j = 0; j < 26; ++j) {
@@ -18,7 +18,7 @@ private:
         }
     }
 
-    int hashFunc(char key) {
+    int hashFunc(char key) {    //Since all keys are letters A-Z, subtracting by 65 ('A') will get indices from 0 to 25
         return (toupper(key) - 65);
     }
 
@@ -50,7 +50,7 @@ public:
     bool deleteWord(string &word) {
         if (word.length() != 3 || !isalpha(word[0]) || !isalpha(word[1]) || !isalpha(word[2]))
             return false; // not a valid 3-letter word
-        //dict[word[0]][word[1]].erase(word[2]);  //erase last hashtable
+        dict[hashFunc(word[0])][hashFunc(word[1])][hashFunc(word[2])] = ""; //erase element in hashtable
         return true;
     }
 };
@@ -65,9 +65,9 @@ void fixInput() {
     std::ofstream myWriteFile("output.txt");
     while (getline(myReadFile, line)) {
         if ((line[0] == '(') || (line[0] == '"') || (islower(line[0])) || (line[3] != ' ')) {
-            myWriteFile << " " << line;
+            myWriteFile << " " << line; // add the definitions to the same line the word is on
         } else if (line.empty() || (line[0] == ' ')) {
-            continue;
+            continue;   //skip blank lines
         } else {
             if (line.substr(0, 3) == "AAH")
                 myWriteFile << line; // if first line, don't add \n
@@ -80,19 +80,16 @@ void fixInput() {
 }
 
 int main() {
-    // fixInput();
-    //  create dictionary
+    fixInput();
+    // create dictionary
     dictionary myDictionary;
-    string word = "AAH", desc = "v. to have fun";
-    cout << myDictionary.lookUp(word) << endl;
-    word = "ZZZ";
-    cout << myDictionary.lookUp(word) << endl;
-    /*
+    //TESTING
+    string word = "AAH", desc = "v. to have fun", word2 = "(LL";
     cout << "Try to insert a word that already exists (returns false): " << myDictionary.insert(word, desc) << endl;
     cout << "Look up the description of a word: " << word << " " << myDictionary.lookUp(word) << endl;
     cout << "Delete a word that exists in the dictionary (returns true): " << myDictionary.deleteWord(word) << endl;
     cout << "Look up the description of a deleted word: " << word << " " << myDictionary.lookUp(word) << endl;
     cout << "Insert a valid word (returns true): " << myDictionary.insert(word, desc) << endl;
     cout << "Look up the description of the newly added word: " << word << " " << myDictionary.lookUp(word) << endl;
-    */
+    cout << "Try to add an invalid 3-letter word (returns false): " << myDictionary.insert(word2, desc) << endl;
 }
